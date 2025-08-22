@@ -1,2 +1,1 @@
-web: gunicorn worldbank.wsgi:application
-
+gunicorn worldbank.wsgi:application
