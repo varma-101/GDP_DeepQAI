@@ -1,5 +1,3 @@
-Here’s a **fully copyable** `README.md` for your project 👇
-
 ```markdown
 # Full Stack Project (Django + React)
 
@@ -118,7 +116,4 @@ Make sure you have the following installed:
 This project is for learning and development purposes.
 Feel free to customize and extend it.
 
-```
-
-Do you also want me to **add an example `.env` setup for React** (like `VITE_API_URL=http://127.0.0.1:8000`) so that anyone cloning knows how to connect frontend to backend directly?
 ```
