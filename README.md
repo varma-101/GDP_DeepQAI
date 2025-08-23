@@ -49,13 +49,7 @@ Make sure you have the following installed:
    python manage.py migrate
    ```
 
-4. (Optional) Create a superuser for the Django admin:
-
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-5. Start the backend server:
+4. Start the backend server:
 
    ```bash
    python manage.py runserver
