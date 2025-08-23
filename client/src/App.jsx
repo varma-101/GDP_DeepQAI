@@ -1,11 +1,33 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Landing from "./components/Landing";
+
+// Simple Login Component
+function Login() {
+  return (
+    <div>
+      <h1>Login Page</h1>
+      <p><Link to="/">Back to Home</Link></p>
+      {/* Add your login form here */}
+    </div>
+  );
+}
+
+// Simple Signup Component  
+function Signup() {
+  return (
+    <div>
+      <h1>Signup Page</h1>
+      <p><Link to="/">Back to Home</Link></p>
+      {/* Add your signup form here */}
+    </div>
+  );
+}
 
 function App() {
   return (
     <div>
-      <h1>Welcome to WorldBank Stats</h1>
-      <p><Link to="/login">Login</Link> | <Link to="/signup">Signup</Link></p>
+      <Landing />
     </div>
   );
 }

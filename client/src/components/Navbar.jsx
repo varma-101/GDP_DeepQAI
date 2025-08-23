@@ -1,42 +1,38 @@
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Navbar.css';
 
-export default function Dashboard() {
+const Navbar = ({ userName = "Dashboard User" }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token"); // clear token
-    navigate("/login");               // redirect
+    navigate("/");               // redirect
   };
 
   return (
-    <div>
-      {/* Navbar */}
-      <nav style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 20px",
-        backgroundColor: "#282c34",
-        color: "white"
-      }}>
-        <h2>My App</h2>
-        <button 
-          onClick={handleLogout}
-          style={{
-            backgroundColor: "#f44336",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: "5px",
-            color: "white",
-            cursor: "pointer"
-          }}
-        >
-          Logout
-        </button>
+    <header className="header">
+      <nav className="nav">
+        <div className="nav-brand">
+          <h2>WorldBank Stats</h2>
+        </div>
+        <div className="nav-links">
+          <div className="user-info">
+            <div className="user-avatar">👤</div>
+            <span className="user-name">{userName}</span>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="logout-button"
+            title="Logout"
+          >
+            <span className="logout-icon">🚪</span>
+            Logout
+          </button>
+        </div>
       </nav>
-
-      {/* Dashboard Content */}
-      
-    </div>
+    </header>
   );
-}
+};
+
+export default Navbar;

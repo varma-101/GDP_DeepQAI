@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './Dashboard.css';
 
 // *** CHANGE: Import Chart.js and registration here, as this is the main container ***
 import {
@@ -41,7 +42,6 @@ const Dashboard = () => {
   ];
 
   // All data fetching logic remains here
- // Replace your existing useEffect with this corrected version
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -64,38 +64,38 @@ const Dashboard = () => {
         const validData = data[1].filter(item => item.value !== null);
         setCountryName(validData[0]?.country.value || 'Selected Country');
 
-        // *** FIX: This is the correct spelling for the variable ***
         const reversedData = [...validData].reverse();
 
         // --- 1. Bar Chart Data (Last 10 Years) ---
-        // Ensure you are using 'reversedData' here
         const last10YearsData = reversedData.slice(-10);
         setBarChartData({
           labels: last10YearsData.map(item => item.date),
           datasets: [{
               label: `GDP (current US$)`,
               data: last10YearsData.map(item => item.value),
-              backgroundColor: 'rgba(54, 162, 235, 0.7)',
-              borderColor: 'rgba(54, 162, 235, 1)',
-              borderWidth: 1,
-              borderRadius: 5,
+              backgroundColor: 'rgba(30, 64, 175, 0.8)',
+              borderColor: 'rgba(30, 64, 175, 1)',
+              borderWidth: 2,
+              borderRadius: 8,
             }],
         });
         
         // --- 2. Pie Chart Data (Last 7 Years) ---
-        // Ensure you are using 'reversedData' here
         const recentDataForPie = reversedData.slice(-7);
         setPieChartData({
             labels: recentDataForPie.map(item => item.date),
             datasets: [{
                 label: 'GDP Distribution',
                 data: recentDataForPie.map(item => item.value),
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#4D5360'],
+                backgroundColor: [
+                  '#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', 
+                  '#dbeafe', '#fbbf24', '#f59e0b'
+                ],
+                borderWidth: 0,
             }]
         });
 
         // --- 3. Area Chart Data (Last 15 Years) ---
-        // Ensure you are using 'reversedData' here
         const last15YearsData = reversedData.slice(-15);
         setAreaChartData({
             labels: last15YearsData.map(item => item.date),
@@ -103,9 +103,15 @@ const Dashboard = () => {
                 fill: true,
                 label: `GDP (current US$)`,
                 data: last15YearsData.map(item => item.value),
-                backgroundColor: 'rgba(75, 192, 192, 0.3)',
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.3
+                backgroundColor: 'rgba(30, 64, 175, 0.2)',
+                borderColor: '#1e40af',
+                tension: 0.4,
+                borderWidth: 3,
+                pointBackgroundColor: '#1e40af',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 8,
             }]
         });
 
@@ -118,126 +124,249 @@ const Dashboard = () => {
     fetchData();
   }, [country]);
 
-  // All chart options objects remain here
+  // Enhanced chart options
   const commonOptions = {
-    responsive: true, maintainAspectRatio: false,
+    responsive: true, 
+    maintainAspectRatio: false,
     plugins: {
-      legend: { labels: { color: '#555', font: { size: 14, family: 'Inter' }}},
-      title: { display: true, color: '#333', font: { size: 20, family: 'Inter', weight: 'bold' }},
-      tooltip: { enabled: true, backgroundColor: 'rgba(0,0,0,0.8)', titleFont: { size: 16, family: 'Inter', weight: 'bold' }, bodyFont: { size: 14, family: 'Inter' }, padding: 10, cornerRadius: 5, callbacks: { label: (context) => ` ${formatGdpValue(context.parsed.y || context.parsed)}` }}
+      legend: { 
+        labels: { 
+          color: '#374151', 
+          font: { size: 14, family: 'Inter', weight: '500' },
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle'
+        }
+      },
+      title: { 
+        display: true, 
+        color: '#1f2937', 
+        font: { size: 18, family: 'Inter', weight: '700' },
+        padding: { top: 10, bottom: 30 }
+      },
+      tooltip: { 
+        enabled: true, 
+        backgroundColor: 'rgba(31, 41, 55, 0.95)', 
+        titleFont: { size: 16, family: 'Inter', weight: 'bold' }, 
+        bodyFont: { size: 14, family: 'Inter' }, 
+        padding: 12, 
+        cornerRadius: 8,
+        borderColor: '#1e40af',
+        borderWidth: 1,
+        callbacks: { 
+          label: (context) => ` ${formatGdpValue(context.parsed.y || context.parsed)}` 
+        }
+      }
     },
-    animation: { duration: 1000, easing: 'easeInOutCubic' }
+    animation: { 
+      duration: 1200, 
+      easing: 'easeInOutCubic' 
+    }
   };
- const barOptions = { 
-  ...commonOptions,
-  plugins: { 
-    ...commonOptions.plugins,
-    title: { 
-      ...commonOptions.plugins.title, 
-      text: `Last 10 Years of GDP for ${countryName}` 
-    }
-  },
-  scales: { 
-    y: { 
-      ticks: { 
-        color: '#555', 
-        font: { family: 'Inter' }, 
-        callback: (value) => `${value / 1e9}B` 
-      }, 
-      grid: { color: '#e0e0e0' } 
-    },
-    x: { 
-      ticks: { color: '#555', font: { family: 'Inter' }}, 
-      grid: { display: false } 
-    }
-  }
-};
 
-  const pieOptions = { ...commonOptions, plugins: { ...commonOptions.plugins, title: { ...commonOptions.plugins.title, text: `GDP Share (Last 7 Years) in ${countryName}` }}};
- const areaOptions = { 
-  ...commonOptions,
-  plugins: { 
-    ...commonOptions.plugins,
-    title: { 
-      ...commonOptions.plugins.title, 
-      text: `Full Historical GDP Trend for ${countryName}` 
-    }
-  },
-  scales: { 
-    y: { 
-      ticks: { 
-        color: '#555', 
-        font: { family: 'Inter' }, 
-        callback: (value) => formatGdpValue(value) 
-      }, 
-      grid: { color: '#e0e0e0' } 
+  const barOptions = { 
+    ...commonOptions,
+    plugins: { 
+      ...commonOptions.plugins,
+      title: { 
+        ...commonOptions.plugins.title, 
+        text: `GDP Growth Trend - Last 10 Years`
+      }
     },
-    x: { 
-      ticks: { color: '#555', font: { family: 'Inter' }}, 
-      grid: { display: false } 
+    scales: { 
+      y: { 
+        beginAtZero: false,
+        ticks: { 
+          color: '#6b7280', 
+          font: { family: 'Inter', size: 12 }, 
+          callback: (value) => `${(value / 1e9).toFixed(0)}B` 
+        }, 
+        grid: { 
+          color: 'rgba(229, 231, 235, 0.5)',
+          lineWidth: 1
+        },
+        border: { display: false }
+      },
+      x: { 
+        ticks: { 
+          color: '#6b7280', 
+          font: { family: 'Inter', size: 12 }
+        }, 
+        grid: { display: false },
+        border: { display: false }
+      }
     }
-  }
-};
+  };
 
-  // The JSX and Styling remains here
+  const pieOptions = { 
+    ...commonOptions, 
+    plugins: { 
+      ...commonOptions.plugins, 
+      title: { 
+        ...commonOptions.plugins.title, 
+        text: `GDP Distribution - Recent Years`
+      },
+      legend: {
+        ...commonOptions.plugins.legend,
+        position: 'bottom',
+        labels: {
+          ...commonOptions.plugins.legend.labels,
+          padding: 15
+        }
+      }
+    }
+  };
+
+  const areaOptions = { 
+    ...commonOptions,
+    plugins: { 
+      ...commonOptions.plugins,
+      title: { 
+        ...commonOptions.plugins.title, 
+        text: `Historical GDP Trend - 15 Year Overview`
+      }
+    },
+    scales: { 
+      y: { 
+        beginAtZero: false,
+        ticks: { 
+          color: '#6b7280', 
+          font: { family: 'Inter', size: 12 }, 
+          callback: (value) => formatGdpValue(value) 
+        }, 
+        grid: { 
+          color: 'rgba(229, 231, 235, 0.5)',
+          lineWidth: 1
+        },
+        border: { display: false }
+      },
+      x: { 
+        ticks: { 
+          color: '#6b7280', 
+          font: { family: 'Inter', size: 12 }
+        }, 
+        grid: { display: false },
+        border: { display: false }
+      }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    }
+  };
+
   return (
-    <>
-      <style>{`
-        :root { --bg-color: #f8f9fa; --card-bg-color: #ffffff; --text-color: #343a40; --primary-color: #007bff; --shadow-color: rgba(0, 0, 0, 0.08); --font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); font-family: var(--font-family); color: var(--text-color); }
-        .dashboard-container { padding: 2rem; max-width: 1600px; margin: auto; }
-        .header { text-align: center; margin-bottom: 2.5rem; }
-        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
-        .filter-container { margin-top: 1.5rem; display: flex; justify-content: center; align-items: center; gap: 1rem; }
-        .filter-container label { font-size: 1.1rem; font-weight: 500; }
-        .country-select { padding: 0.75rem 1rem; font-size: 1rem; font-family: var(--font-family); border-radius: 8px; border: 1px solid #ced4da; background-color: var(--card-bg-color); cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-        .country-select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); }
-        .top-charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; }
-        .chart-container-full-width { margin-top: 2rem; }
-        .chart-container { position: relative; height: 550px; background-color: var(--card-bg-color); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px var(--shadow-color); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; align-items: center; justify-content: center; }
-        .chart-container:hover { transform: translateY(-5px); box-shadow: 0 12px 16px var(--shadow-color); }
-        .message { text-align: center; font-size: 1.2rem; padding: 2rem; }
-        .message-error { color: #dc3545; }
-        @media (max-width: 500px) { .top-charts-container { grid-template-columns: 1fr; } }
-      `}</style>
-
-      <div className="dashboard-container">
-        <header className="header">
-          <h1>Global GDP Explorer</h1>
-          <div className="filter-container">
-            <label htmlFor="country-select">Viewing Data For:</label>
-            <select id="country-select" value={country} onChange={(e) => setCountry(e.target.value)} className="country-select">
-              {countries.map((c) => (<option key={c.code} value={c.code}>{c.name}</option>))}
-            </select>
+    <div className="dashboard">
+      {/* Header Section */}
+      <div className="dashboard-header">
+        <div className="header-content">
+          <div className="header-text">
+            <h1 className="dashboard-title">
+              Global GDP <span className="title-highlight">Analytics</span>
+            </h1>
+            <p className="dashboard-subtitle">
+              Explore comprehensive economic data and trends from the World Bank
+            </p>
           </div>
-        </header>
-
-        <main>
-          {loading && <p className="message">Fetching latest data...</p>}
-          {error && <p className="message message-error">Failed to load data: {error}</p>}
           
-          {!loading && !error && (
-            <>
-              <div className="top-charts-container">
-                <div className="chart-container">
-                  {/* *** CHANGE: Use the new BarChart component and pass props *** */}
+          <div className="country-selector-container">
+            <label htmlFor="country-select" className="selector-label">
+              📊 Analyzing Data For:
+            </label>
+            <div className="selector-wrapper">
+              <select 
+                id="country-select" 
+                value={country} 
+                onChange={(e) => setCountry(e.target.value)} 
+                className="country-selector"
+              >
+                {countries.map((c) => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        {countryName && !loading && (
+          <div className="country-info">
+            <h2 className="country-name">{countryName}</h2>
+            <p className="country-description">Economic Performance Dashboard</p>
+          </div>
+        )}
+      </div>
+
+      {/* Main Content */}
+      <div className="dashboard-content">
+        {loading && (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p className="loading-text">Fetching latest economic data...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="error-container">
+            <div className="error-icon">⚠️</div>
+            <h3 className="error-title">Data Loading Error</h3>
+            <p className="error-message">{error}</p>
+            <button 
+              className="retry-button" 
+              onClick={() => window.location.reload()}
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+        
+        {!loading && !error && (
+          <>
+            {/* Charts Grid */}
+            <div className="charts-grid">
+              <div className="chart-card">
+                <div className="chart-header">
+                  <div className="chart-icon">📈</div>
+                  <div>
+                    <h3 className="chart-title">Annual GDP Growth</h3>
+                    <p className="chart-description">Yearly economic performance</p>
+                  </div>
+                </div>
+                <div className="chart-wrapper">
                   <BarChart data={barChartData} options={barOptions} />
                 </div>
-                <div className="chart-container">
-                  {/* *** CHANGE: Use the new PieChart component and pass props *** */}
+              </div>
+
+              <div className="chart-card">
+                <div className="chart-header">
+                  <div className="chart-icon">🥧</div>
+                  <div>
+                    <h3 className="chart-title">GDP Distribution</h3>
+                    <p className="chart-description">Economic composition overview</p>
+                  </div>
+                </div>
+                <div className="chart-wrapper">
                   <PieChart data={pieChartData} options={pieOptions} />
                 </div>
               </div>
+            </div>
 
-              <div className="chart-container chart-container-full-width">
-                {/* *** CHANGE: Use the new AreaChart component and pass props *** */}
+            {/* Full Width Area Chart */}
+            <div className="chart-card chart-card-wide">
+              <div className="chart-header">
+                <div className="chart-icon">📊</div>
+                <div>
+                  <h3 className="chart-title">Long-term Economic Trend</h3>
+                  <p className="chart-description">Historical GDP progression analysis</p>
+                </div>
+              </div>
+              <div className="chart-wrapper chart-wrapper-large">
                 <AreaChart data={areaChartData} options={areaOptions} />
               </div>
-            </>
-          )}
-        </main>
+            </div>
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

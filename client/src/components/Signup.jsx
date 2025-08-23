@@ -1,146 +1,153 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import "./Signup.css";
 
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setError(""); // reset old error
+    setError("");
+    setLoading(true);
 
-    if (!username || !password) {
-      setError("Username and password are required");
+    if (!username || !password || !email) {
+      setError("All fields are required");
+      setLoading(false);
       return;
     }
 
     try {
       await axios.post(
-        "http://127.0.0.1:8000/api/register/",
+        "https://deepq-ai-backend.onrender.com/api/register/",
         { username, password, email },
         { headers: { "Content-Type": "application/json" } }
       );
-      alert("Signup successful! Please log in.");
-      navigate("/login");
+      
+      // Success animation
+      document.querySelector('.signup-container').classList.add('success');
+      
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+      
     } catch (err) {
       console.error(err.response?.data);
       setError(err.response?.data?.error || "Error creating account");
+      
+      // Error animation
+      document.querySelector('.signup-form').classList.add('shake');
+      setTimeout(() => {
+        document.querySelector('.signup-form')?.classList.remove('shake');
+      }, 500);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={pageStyle}>
-      <div style={formContainerStyle}>
-        <h2 style={titleStyle}>Create Account</h2>
-        <form onSubmit={handleSignup}>
-          {error && <p style={errorStyle}>{error}</p>}
-
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={inputStyle}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
-          />
-          <button
-            type="submit"
-            style={buttonStyle}
-          >
-            Signup
-          </button>
-        </form>
-        <div style={loginLinkContainerStyle}>
-          Already have an account?{" "}
-          <Link to="/login" style={loginLinkStyle}>
-            Login
-          </Link>
+    <div className="signup-page">
+      <div className="signup-background">
+        <div className="floating-shapes">
+          <div className="shape shape-1"></div>
+          <div className="shape shape-2"></div>
+          <div className="shape shape-3"></div>
+          <div className="shape shape-4"></div>
+          <div className="shape shape-5"></div>
+        </div>
+      </div>
+      
+      <div className="signup-container">
+        <div className="signup-form">
+          <div className="form-header">
+            <div className="brand-logo">
+              <div className="logo-icon">📊</div>
+              <h1 className="brand-title">WorldBank Stats</h1>
+            </div>
+            <p className="form-subtitle">Create your analytics account</p>
+          </div>
+          
+          <form onSubmit={handleSignup} className="form">
+            {error && (
+              <div className="error-message">
+                <span className="error-icon">⚠️</span>
+                {error}
+              </div>
+            )}
+            
+            <div className="input-group">
+              <div className="input-wrapper">
+                <span className="input-icon">👤</span>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="input-group">
+              <div className="input-wrapper">
+                <span className="input-icon">✉️</span>
+                <input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="input-group">
+              <div className="input-wrapper">
+                <span className="input-icon">🔒</span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
+            </div>
+            
+            <button
+              type="submit"
+              className={`signup-button ${loading ? 'loading' : ''}`}
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="loading-spinner"></div>
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <span className="button-icon">→</span>
+                </>
+              )}
+            </button>
+          </form>
+          
+          <div className="form-footer">
+            <p className="login-text">
+              Already have an account? 
+              <Link to="/login" className="login-link">Sign in</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
-
-// --- STYLES ---
-const pageStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  height: "100vh",
-  background: "#f0f2f5",
-  fontFamily: "Arial, sans-serif",
-};
-
-const formContainerStyle = {
-  padding: "40px",
-  backgroundColor: "#ffffff",
-  borderRadius: "8px",
-  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-  width: "100%",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const titleStyle = {
-  marginBottom: "24px",
-  color: "#333",
-  fontSize: "28px",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "12px",
-  border: "1px solid #ddd",
-  borderRadius: "4px",
-  marginBottom: "16px",
-  fontSize: "16px",
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "12px",
-  border: "none",
-  borderRadius: "4px",
-  backgroundColor: "#28a745",
-  color: "white",
-  fontSize: "16px",
-  cursor: "pointer",
-  transition: "background-color 0.3s ease",
-};
-
-const errorStyle = {
-  color: "red",
-  marginBottom: "10px",
-  fontSize: "14px",
-};
-
-const loginLinkContainerStyle = {
-  marginTop: "20px",
-  color: "#555",
-  fontSize: "14px",
-};
-
-const loginLinkStyle = {
-  color: "#007bff",
-  textDecoration: "none",
-  fontWeight: "bold",
 };
 
 export default Signup;
