@@ -1,5 +1,5 @@
 ```markdown
-# Full Stack Project (Django + React)
+# Full Stack Project (Django+React)
 
 This project is built with a **Django backend** and a **React frontend**.  
 Django provides the REST API using its default authentication system (SQLite as the database), while React serves as the client-side application.
